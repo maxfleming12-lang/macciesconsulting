@@ -611,15 +611,19 @@
   <div id="tsparticles"></div>
   <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
   <script>
-    tsParticles.load("tsparticles", {
-      particles: {
-        number: { value: 30 },
-        color: { value: "#ffffff" },
-        size: { value: 3 },
-        move: { enable: true, speed: 1 },
-        opacity: { value: 0.5 }
-      }
-    });
+    if (window.tsParticles?.load) {
+      tsParticles.load("tsparticles", {
+        particles: {
+          number: { value: 30 },
+          color: { value: "#ffffff" },
+          size: { value: 3 },
+          move: { enable: true, speed: 1 },
+          opacity: { value: 0.5 }
+        }
+      });
+    } else {
+      console.warn('tsParticles failed to load; continuing without background particles.');
+    }
   </script>
 </body>
 </html>
