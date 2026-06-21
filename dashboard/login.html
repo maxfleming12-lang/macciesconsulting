@@ -277,50 +277,44 @@
   <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
-    // ── Config ────────────────────────────────────────────────────────────────
-    // Replace with your Google OAuth 2.0 Client ID
     const GOOGLE_CLIENT_ID = '1043849806484-mgf892e62l2f7srp9rr43d2muebi4en4.apps.googleusercontent.com';
+    const LOCAL_PASS_HASH = btoa('maxwell2026');
 
-    // Simple passphrase gate (replace with a real auth backend for production)
-    // To set: run  btoa('yourpassword')  in the browser console and paste the result below
-    const LOCAL_PASS_HASH = btoa('maxwell2026'); // change this!
+    document.getElementById('setupNotice').style.display = 'none';
 
-    // ── Google OAuth ──────────────────────────────────────────────────────────
-    const isConfigured = GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID';
-    if (!isConfigured) {
-      document.getElementById('setupNotice').style.display = 'block';
-    } else {
-      document.getElementById('setupNotice').style.display = 'none';
-      window.onload = () => {
-        if (typeof google !== 'undefined') {
-          google.accounts.id.initialize({
-            client_id: GOOGLE_CLIENT_ID,
-            callback: handleGoogleCredential,
-          });
-        }
-      };
+    // initTokenClient opens a real popup — works reliably on button clicks
+    let tokenClient;
+    function getTokenClient() {
+      if (!tokenClient) {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: GOOGLE_CLIENT_ID,
+          scope: 'openid email profile',
+          callback: async (resp) => {
+            if (resp.error) { console.error(resp); return; }
+            const info = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+              headers: { Authorization: `Bearer ${resp.access_token}` }
+            }).then(r => r.json());
+            sessionStorage.setItem('dashboard_user', JSON.stringify({
+              name: info.name,
+              email: info.email,
+              picture: info.picture,
+              provider: 'google',
+              access_token: resp.access_token,
+            }));
+            window.location.href = 'index.html';
+          },
+        });
+      }
+      return tokenClient;
     }
 
     document.getElementById('googleBtn').addEventListener('click', () => {
-      if (!isConfigured) {
-        alert('Google OAuth is not yet configured. Use the email/password form for now.');
+      if (typeof google === 'undefined' || !google.accounts?.oauth2) {
+        alert('Google Sign-In is still loading — please try again in a moment.');
         return;
       }
-      google.accounts.id.prompt();
+      getTokenClient().requestAccessToken({ prompt: 'select_account' });
     });
-
-    function handleGoogleCredential(response) {
-      // Decode JWT payload (no verification needed client-side for display)
-      const payload = JSON.parse(atob(response.credential.split('.')[1]));
-      sessionStorage.setItem('dashboard_user', JSON.stringify({
-        name: payload.name,
-        email: payload.email,
-        picture: payload.picture,
-        provider: 'google',
-        token: response.credential,
-      }));
-      window.location.href = 'index.html';
-    }
 
     // ── Email / password form ─────────────────────────────────────────────────
     document.getElementById('loginForm').addEventListener('submit', (e) => {
@@ -329,7 +323,6 @@
       const pass  = document.getElementById('password').value;
       const err   = document.getElementById('errorMsg');
 
-      // Very basic local check — replace with a real backend call
       const allowedEmail = 'maxfleming@macciesconsulting.au';
       if (email === allowedEmail && btoa(pass) === LOCAL_PASS_HASH) {
         sessionStorage.setItem('dashboard_user', JSON.stringify({
