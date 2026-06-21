@@ -5,6 +5,11 @@
   "observability": {
     "enabled": true
   },
+  // Build the 11ty site before deploying so `_site` (gitignored) exists.
+  // Runs automatically during `wrangler deploy` (Workers Builds deploy command).
+  "build": {
+    "command": "npm run build"
+  },
   "assets": {
     "directory": "_site"
   },
