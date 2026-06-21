@@ -626,9 +626,10 @@
     <!-- Empty state -->
     <div class="empty-state" id="jobEmpty" style="display:none">
       <div class="big">📭</div>
-      <p>No applications found.<br>
-         Make sure you have a <strong>Job Applications</strong> label in Gmail,<br>
-         or try syncing again. <a href="#" id="helpLink">How it works →</a></p>
+      <p>No applications found yet.<br>
+         We search your inbox &amp; sent mail for application emails from the last year.<br>
+         For best results, label them <strong>Job Applications</strong> in Gmail.
+         <a href="#" id="helpLink">How it works →</a></p>
     </div>
   </div>
 
@@ -810,16 +811,51 @@ async function fetchGmailApplications(token) {
   icon.innerHTML = '<span class="spinner">⏳</span>';
 
   try {
-    // Search sent mail for job application keywords
-    const query = encodeURIComponent('in:sent (subject:application OR subject:applied OR subject:"cover letter" OR subject:"job application")');
+    // Match job-application emails in BOTH inbox and sent — by label, subject, or
+    // common phrases. (Portal applications arrive in the inbox, not your Sent folder.)
+    const terms = [
+      'label:job-applications',
+      'subject:(application OR applied OR "job application" OR "cover letter" OR interview)',
+      '"thank you for applying"',
+      '"application received"',
+      '"we received your application"',
+      '"your application has been"',
+      '"applying for"',
+    ];
+    const query = encodeURIComponent('(' + terms.join(' OR ') + ') newer_than:1y');
     const listRes = await fetch(
       `https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${query}&maxResults=50`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     const listData = await listRes.json();
-    const messages = listData.messages || [];
 
-    const parsed = await Promise.all(messages.map(m => fetchAndParseMessage(token, m.id)));
+    // Surface API errors instead of silently showing "No applications found".
+    if (!listRes.ok || listData.error) {
+      const e = listData.error || {};
+      if (listRes.status === 401) {
+        // Token expired/invalid — clear it and re-authorise.
+        sessionStorage.removeItem('gmail_token');
+        gmailToken = null;
+        alert('Your Gmail access expired. Please connect again.');
+        authoriseGmail();
+        return;
+      }
+      const reason = e.message || `${listRes.status} ${listRes.statusText}`;
+      const hint = listRes.status === 403
+        ? '\n\nThis usually means the Gmail API is not enabled in the Google Cloud project, or read-only Gmail access was not granted on the consent screen.'
+        : '';
+      console.error('Gmail API error:', listData);
+      alert('Gmail could not be searched:\n\n' + reason + hint);
+      return;
+    }
+
+    const messages = listData.messages || [];
+    if (messages.length === 0) {
+      showJobUI();   // accurate empty state — query ran fine, just no matches
+      return;
+    }
+
+    const parsed = await Promise.all(messages.map(m => fetchAndParseMessage(token, m.id, user?.email)));
     const fresh = parsed.filter(Boolean);
 
     // Merge with existing (deduplicate by id)
@@ -830,35 +866,52 @@ async function fetchGmailApplications(token) {
     showJobUI();
   } catch (err) {
     console.error('Gmail sync error:', err);
-    alert('Gmail sync failed. Check the console for details.');
+    alert('Gmail sync failed: ' + (err?.message || err));
   } finally {
     btn.disabled = false;
     icon.textContent = '🔄';
   }
 }
 
-async function fetchAndParseMessage(token, id) {
+const MAIL_PROVIDERS = /^(gmail|googlemail|outlook|hotmail|yahoo|icloud|me|live|proton|protonmail|aol|noreply|no-reply)$/i;
+
+async function fetchAndParseMessage(token, id, myEmail) {
   try {
     const res = await fetch(
-      `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=metadata&metadataHeaders=Subject&metadataHeaders=Date&metadataHeaders=To`,
+      `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=metadata&metadataHeaders=Subject&metadataHeaders=Date&metadataHeaders=From&metadataHeaders=To`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     const msg = await res.json();
+    if (msg.error) return null;
     const headers = Object.fromEntries((msg.payload?.headers || []).map(h => [h.name, h.value]));
     const subject = headers['Subject'] || '';
     const date = headers['Date'] ? new Date(headers['Date']).toISOString() : new Date().toISOString();
+    const from = headers['From'] || '';
     const to = headers['To'] || '';
 
-    // Extract company from To domain
-    const domainMatch = to.match(/@([\w.-]+)/);
-    const domain = domainMatch ? domainMatch[1].replace(/\.(com|com\.au|au|org|net|io)$/, '') : '';
-    const company = domain
-      ? domain.split('.').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-      : 'Unknown';
+    // Pick the "other party": received mail → From, sent mail → To.
+    const fromIsMe = myEmail && from.toLowerCase().includes(String(myEmail).toLowerCase());
+    const counterparty = fromIsMe ? to : from;
 
-    // Extract role from subject
-    const roleMatch = subject.match(/(?:application|applied|applying)\s+(?:for\s+)?(.+?)(?:\s+at\s+.+)?$/i);
-    const role = roleMatch ? roleMatch[1].trim() : subject.replace(/application|applied|job/gi, '').trim() || 'Role';
+    // Company from the counterparty's domain, skipping generic mail providers.
+    let company = 'Unknown';
+    const domainMatch = counterparty.match(/@([\w.-]+)/);
+    if (domainMatch) {
+      const parts = domainMatch[1].replace(/\.(com|com\.au|co\.uk|org|net|io|co|au)$/i, '').split('.');
+      const label = parts[parts.length - 1];   // e.g. jobs.acme → acme
+      if (label && !MAIL_PROVIDERS.test(label)) {
+        company = label.charAt(0).toUpperCase() + label.slice(1);
+      } else {
+        // Fall back to the display name before <email>
+        const nameMatch = counterparty.match(/^\s*"?([^"<]+?)"?\s*</);
+        if (nameMatch) company = nameMatch[1].trim();
+      }
+    }
+
+    // Role from the subject line.
+    const roleMatch = subject.match(/(?:application|applied|applying)\s+(?:for\s+|to\s+)?(.+?)(?:\s+at\s+.+)?$/i);
+    const role = (roleMatch ? roleMatch[1].trim()
+                            : subject.replace(/thank you for|application|applied|job/gi, '').trim()) || subject || 'Role';
 
     return { id, company, role, date, status: 'applied', source: 'Gmail' };
   } catch { return null; }
@@ -866,7 +919,7 @@ async function fetchAndParseMessage(token, id) {
 
 document.getElementById('helpLink')?.addEventListener('click', (e) => {
   e.preventDefault();
-  alert('Job Tracker — How it works:\n\n1. Click "Connect Gmail" to grant read-only access\n2. The tracker searches your Sent folder for emails with keywords like "application", "applied", or "cover letter"\n3. It extracts the company name from the recipient domain and the role from the subject line\n4. You can manually add a "Job Applications" label in Gmail to organise emails\n5. Click "Sync Gmail" at any time to pull in new applications');
+  alert('Job Tracker — How it works:\n\n1. Click "Connect Gmail" to grant read-only access\n2. The tracker searches BOTH your inbox and sent mail (last 12 months) for application emails — by the "Job Applications" label, common subjects (application, applied, interview), and phrases like "thank you for applying"\n3. It extracts the company from the sender/recipient and the role from the subject line\n4. Tip: label application emails "Job Applications" in Gmail for the most accurate results\n5. Click "Sync Gmail" any time to pull in new applications');
 });
 
 // ── Personal Space — editable links ──────────────────────────────────────────
