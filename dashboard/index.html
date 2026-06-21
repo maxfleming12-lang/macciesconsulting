@@ -687,7 +687,7 @@ function authoriseGmail() {
       fetchGmailApplications(gmailToken);
     },
   });
-  client.requestAccessToken();
+  client.requestAccessToken({ prompt: 'select_account' });
 }
 
 async function fetchGmailApplications(token) {
