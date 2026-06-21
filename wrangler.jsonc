@@ -5,6 +5,11 @@
   "observability": {
     "enabled": true
   },
+  // Build the 11ty site before deploying so `_site` (gitignored) exists.
+  // Runs automatically during `wrangler deploy` (Workers Builds deploy command).
+  "build": {
+    "command": "npm run build"
+  },
   "assets": {
     "directory": "_site"
   },
@@ -12,6 +17,3 @@
     "nodejs_compat"
   ]
 }
-- uses: actions/setup-node@v4
-  with:
-    node-version: '22' # Update to your desired version (e.g., 20, 22, 24)
