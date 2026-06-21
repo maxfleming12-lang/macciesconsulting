@@ -13,3 +13,6 @@ node_modules/
 
 # Local Claude Code config (launch config, local permissions)
 .claude/
+
+# macOS junk
+.DS_Store
