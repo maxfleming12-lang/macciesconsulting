@@ -14,3 +14,4 @@ node_modules/
 # Local Claude Code config (launch config, local permissions)
 .claude/
 
+.DS_Store
