@@ -145,6 +145,20 @@
       letter-spacing: .02em;
     }
 
+    .badge-portal {
+      text-decoration: none;
+      background: rgba(255,255,255,0.22);
+      border-color: rgba(255,255,255,.5);
+      box-shadow: 0 2px 12px rgba(0,0,0,.15);
+      transition: background .2s, transform .15s, box-shadow .2s;
+      cursor: pointer;
+    }
+    .badge-portal:hover {
+      background: rgba(255,255,255,0.38);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,.22);
+    }
+
     .switches { display: flex; gap: 10px; flex-wrap: wrap; }
 
     .toggle {
@@ -409,7 +423,7 @@
     <section class="hero card">
       <div class="topbar">
         <div class="badge-row">
-          <span class="badge">Link hub</span>
+          <a class="badge badge-portal" href="dashboard/login.html">🔐 My Dashboard</a>
           <span class="badge">Playful & quirky</span>
           <span class="badge playful-only">Powered by mild chaos</span>
         </div>

@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | Maxwell Fleming</title>
+  <style>
+    :root {
+      --bg1: #ff6ec7; --bg2: #7c6cff; --bg3: #00c2ff;
+      --card: rgba(255,255,255,0.14);
+      --card-border: rgba(255,255,255,0.28);
+      --text: #fff;
+      --muted: rgba(255,255,255,0.75);
+      --btn-bg: rgba(255,255,255,0.95);
+      --btn-text: #1f1635;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100%;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: linear-gradient(-45deg, var(--bg1), var(--bg2), var(--bg3), #ff9ecf);
+      background-size: 400% 400%;
+      animation: gradientShift 16s ease infinite;
+      overflow-x: hidden;
+    }
+
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      50%       { transform: translateY(24px) translateX(18px); }
+    }
+
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      width: 340px; height: 340px;
+      border-radius: 999px;
+      filter: blur(70px);
+      opacity: .35;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::before { top: -60px; left: -80px; background: #fff0f8; animation: float 14s ease-in-out infinite; }
+    body::after  { right: -90px; bottom: 6%; background: #8ef6ff; animation: float 18s ease-in-out infinite reverse; }
+
+    /* ── Layout ── */
+    .wrap {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 900px);
+      margin: 0 auto;
+      padding: 24px 18px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+
+    .avatar-sm {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.5);
+      object-fit: cover;
+      background: rgba(255,255,255,.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .avatar-sm img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+    .greeting { font-size: 15px; font-weight: 700; }
+    .greeting span { font-weight: 400; color: var(--muted); }
+
+    .topbar-right { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .pill-btn {
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s, transform .15s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .pill-btn:hover { background: rgba(255,255,255,.28); transform: translateY(-1px); }
+    .pill-btn.danger { border-color: rgba(255,120,120,.4); }
+    .pill-btn.danger:hover { background: rgba(255,80,80,.2); }
+
+    /* ── Glass card ── */
+    .card {
+      background: var(--card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 20px 45px rgba(18,9,44,.22);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 800; letter-spacing: -.02em;
+    }
+    .card-title .emoji { font-size: 22px; }
+
+    .card-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ── Personal Space links ── */
+    .link-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    .space-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.1);
+      text-decoration: none;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background .2s, transform .15s, border-color .2s;
+    }
+    .space-link:hover {
+      background: rgba(255,255,255,.22);
+      border-color: rgba(255,255,255,.45);
+      transform: translateY(-2px);
+    }
+
+    .space-link .icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .space-link .info { display: flex; flex-direction: column; }
+    .space-link .name { font-size: 13px; font-weight: 700; }
+    .space-link .desc { font-size: 11px; color: rgba(255,255,255,.65); font-weight: 400; margin-top: 1px; }
+
+    /* colour accent dots */
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-left: auto;
+      opacity: .7;
+    }
+    .dot-pink   { background: #ff6ec7; }
+    .dot-purple { background: #a78bfa; }
+    .dot-blue   { background: #38bdf8; }
+    .dot-green  { background: #4ade80; }
+    .dot-orange { background: #fb923c; }
+    .dot-yellow { background: #fbbf24; }
+
+    /* ── Storage section ── */
+    .storage-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .storage-tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 8px;
+      padding: 20px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.1);
+      text-decoration: none;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      transition: background .2s, transform .15s;
+      cursor: pointer;
+    }
+    .storage-tile:hover {
+      background: rgba(255,255,255,.22);
+      transform: translateY(-3px);
+    }
+    .storage-tile .big-icon { font-size: 32px; }
+    .storage-tile .tile-sub { font-size: 11px; color: rgba(255,255,255,.6); font-weight: 400; }
+
+    /* ── Job tracker ── */
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 160px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.3);
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .search-box::placeholder { color: rgba(255,255,255,.4); }
+    .search-box:focus { border-color: rgba(255,255,255,.6); }
+
+    .filter-btn {
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(255,255,255,.1);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .filter-btn:hover, .filter-btn.active { background: rgba(255,255,255,.25); }
+
+    .sync-btn {
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: none;
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+      box-shadow: 0 2px 10px rgba(0,0,0,.12);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .sync-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,.2); }
+    .sync-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    /* Job table */
+    .job-table-wrap { overflow-x: auto; border-radius: 14px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 10px 14px;
+      color: rgba(255,255,255,.6);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      border-bottom: 1px solid rgba(255,255,255,.15);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      transition: background .15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,.07); }
+
+    tbody td {
+      padding: 12px 14px;
+      vertical-align: middle;
+    }
+
+    .co-name { font-weight: 700; }
+    .role-name { color: rgba(255,255,255,.8); }
+
+    .status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .s-applied    { background: rgba(96,165,250,.25); color: #bfdbfe; }
+    .s-interview  { background: rgba(167,139,250,.3); color: #ddd6fe; }
+    .s-offer      { background: rgba(74,222,128,.25); color: #bbf7d0; }
+    .s-rejected   { background: rgba(248,113,113,.2); color: #fecaca; }
+    .s-ghosted    { background: rgba(255,255,255,.1); color: rgba(255,255,255,.5); }
+
+    .date-cell { color: rgba(255,255,255,.6); white-space: nowrap; }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255,255,255,.55);
+    }
+    .empty-state .big { font-size: 36px; margin-bottom: 10px; }
+    .empty-state p { font-size: 14px; line-height: 1.6; }
+    .empty-state a { color: rgba(255,255,255,.8); }
+
+    /* Gmail OAuth connect banner */
+    .connect-banner {
+      background: rgba(255,255,255,.1);
+      border: 1px dashed rgba(255,255,255,.3);
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .connect-banner .cb-text { flex: 1; min-width: 160px; }
+    .connect-banner .cb-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+    .connect-banner .cb-sub { font-size: 12px; color: var(--muted); }
+
+    .connect-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: none;
+      background: #fff;
+      color: #1f1635;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform .15s, box-shadow .15s;
+      box-shadow: 0 2px 10px rgba(0,0,0,.12);
+    }
+    .connect-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,.2); }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255,255,255,.45);
+      padding-top: 8px;
+    }
+
+    /* Spinning loader */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { display: inline-block; animation: spin .7s linear infinite; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .card { padding: 20px 16px; }
+      .link-grid { grid-template-columns: 1fr 1fr; }
+      .storage-grid { grid-template-columns: 1fr 1fr; }
+      .topbar { gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="avatar-sm" id="avatarWrap">👤</div>
+      <div>
+        <div class="greeting" id="greetingEl">Hey, Maxwell 👋</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.6);">Personal dashboard</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <a class="pill-btn" href="../index.html">← Link Hub</a>
+      <button class="pill-btn danger" id="signOutBtn" type="button">Sign out</button>
+    </div>
+  </div>
+
+  <!-- ── Personal Space ─────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title"><span class="emoji">🏠</span> Personal Space</div>
+        <div class="card-sub">Your private links — internal apps, staging, tools</div>
+      </div>
+    </div>
+
+    <div class="link-grid" id="personalLinks">
+      <!-- Add / remove entries here as needed -->
+      <a class="space-link" href="https://console.cloud.google.com" target="_blank" rel="noopener">
+        <span class="icon">☁️</span>
+        <span class="info"><span class="name">Google Cloud</span><span class="desc">APIs &amp; infrastructure</span></span>
+        <span class="dot dot-blue"></span>
+      </a>
+      <a class="space-link" href="https://github.com/maxfleming12-lang" target="_blank" rel="noopener">
+        <span class="icon">🐙</span>
+        <span class="info"><span class="name">GitHub</span><span class="desc">Repos &amp; code</span></span>
+        <span class="dot dot-purple"></span>
+      </a>
+      <a class="space-link" href="https://macciesconsulting.au" target="_blank" rel="noopener">
+        <span class="icon">💼</span>
+        <span class="info"><span class="name">Maccies Consulting</span><span class="desc">Business site</span></span>
+        <span class="dot dot-pink"></span>
+      </a>
+      <a class="space-link" href="https://mail.google.com" target="_blank" rel="noopener">
+        <span class="icon">📧</span>
+        <span class="info"><span class="name">Gmail</span><span class="desc">maxfleming@macciesconsulting.au</span></span>
+        <span class="dot dot-orange"></span>
+      </a>
+      <a class="space-link" href="https://calendar.google.com" target="_blank" rel="noopener">
+        <span class="icon">📅</span>
+        <span class="info"><span class="name">Calendar</span><span class="desc">Schedule &amp; meetings</span></span>
+        <span class="dot dot-green"></span>
+      </a>
+      <a class="space-link" href="https://drive.google.com" target="_blank" rel="noopener">
+        <span class="icon">📁</span>
+        <span class="info"><span class="name">Google Drive</span><span class="desc">Files &amp; documents</span></span>
+        <span class="dot dot-yellow"></span>
+      </a>
+      <a class="space-link" href="https://www.linkedin.com/in/maxwell-fleming" target="_blank" rel="noopener">
+        <span class="icon">🔗</span>
+        <span class="info"><span class="name">LinkedIn</span><span class="desc">Professional profile</span></span>
+        <span class="dot dot-blue"></span>
+      </a>
+      <a class="space-link" href="../Maxwell-Fleming-Resume-2026.pdf" target="_blank">
+        <span class="icon">📄</span>
+        <span class="info"><span class="name">Resume 2026</span><span class="desc">Latest CV</span></span>
+        <span class="dot dot-pink"></span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Storage ────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title"><span class="emoji">🗄️</span> Storage</div>
+        <div class="card-sub">Jump straight to your cloud storage</div>
+      </div>
+    </div>
+
+    <div class="storage-grid">
+      <a class="storage-tile" href="https://drive.google.com/drive/my-drive" target="_blank" rel="noopener">
+        <span class="big-icon">📁</span>
+        <span>Google Drive</span>
+        <span class="tile-sub">My Drive</span>
+      </a>
+      <a class="storage-tile" href="https://drive.google.com/drive/shared-drives" target="_blank" rel="noopener">
+        <span class="big-icon">🤝</span>
+        <span>Shared Drives</span>
+        <span class="tile-sub">Team folders</span>
+      </a>
+      <a class="storage-tile" href="https://photos.google.com" target="_blank" rel="noopener">
+        <span class="big-icon">🖼️</span>
+        <span>Google Photos</span>
+        <span class="tile-sub">Images &amp; albums</span>
+      </a>
+      <a class="storage-tile" href="https://one.google.com/storage" target="_blank" rel="noopener">
+        <span class="big-icon">☁️</span>
+        <span>Storage Quota</span>
+        <span class="tile-sub">Usage overview</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Job Search Tracker ─────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title"><span class="emoji">🎯</span> Job Search Tracker</div>
+        <div class="card-sub">Applications pulled from your Gmail — powered by Gmail API</div>
+      </div>
+      <button class="sync-btn" id="syncBtn" type="button">
+        <span id="syncIcon">🔄</span> Sync Gmail
+      </button>
+    </div>
+
+    <!-- Connect Gmail banner (shown until authorised) -->
+    <div class="connect-banner" id="connectBanner">
+      <span style="font-size:28px">📬</span>
+      <div class="cb-text">
+        <div class="cb-title">Connect your Gmail to auto-import applications</div>
+        <div class="cb-sub">Uses Gmail API read-only scope. Searches for sent job application emails and organises them here.</div>
+      </div>
+      <button class="connect-btn" id="connectGmailBtn" type="button">
+        <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.8 2.5 30.3 0 24 0 14.7 0 6.7 5.5 2.9 13.5l7.8 6.1C12.5 13.2 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.4c-.5 2.9-2.2 5.4-4.7 7l7.3 5.7c4.3-4 6.8-9.9 6.8-16.7z"/><path fill="#FBBC05" d="M10.7 28.4A14.6 14.6 0 0 1 9.5 24c0-1.5.3-3 .8-4.4l-7.8-6C.9 16.6 0 20.2 0 24c0 3.8.9 7.4 2.6 10.5l8.1-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.3-5.7c-2.2 1.5-5 2.3-8.6 2.3-6.1 0-11.4-3.7-13.3-9l-8.1 6.1C6.7 42.5 14.7 48 24 48z"/></svg>
+        Connect Gmail
+      </button>
+    </div>
+
+    <!-- Status filters -->
+    <div class="toolbar" id="jobToolbar" style="display:none">
+      <input class="search-box" id="jobSearch" type="search" placeholder="Search company or role…" />
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="applied">Applied</button>
+      <button class="filter-btn" data-filter="interview">Interview</button>
+      <button class="filter-btn" data-filter="offer">Offer</button>
+      <button class="filter-btn" data-filter="rejected">Rejected</button>
+    </div>
+
+    <!-- Table -->
+    <div class="job-table-wrap" id="jobTableWrap" style="display:none">
+      <table>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody id="jobTableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" id="jobEmpty" style="display:none">
+      <div class="big">📭</div>
+      <p>No applications found.<br>
+         Make sure you have a <strong>Job Applications</strong> label in Gmail,<br>
+         or try syncing again. <a href="#" id="helpLink">How it works →</a></p>
+    </div>
+  </div>
+
+  <div class="footer">Maxwell's private dashboard · not for public eyes 🤫</div>
+</div>
+
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<script>
+// ── Config ────────────────────────────────────────────────────────────────────
+// Fill these in after setting up a Google Cloud project:
+//   https://console.cloud.google.com → APIs & Services → Credentials
+const GOOGLE_CLIENT_ID = '1043849806484-mgf892e62l2f7srp9rr43d2muebi4en4.apps.googleusercontent.com';
+const GMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.readonly';
+
+// ── Auth guard ────────────────────────────────────────────────────────────────
+const user = (() => {
+  try { return JSON.parse(sessionStorage.getItem('dashboard_user')); }
+  catch { return null; }
+})();
+
+if (!user) {
+  window.location.replace('login.html');
+}
+
+// ── Populate user UI ──────────────────────────────────────────────────────────
+const firstName = (user?.name || 'Maxwell').split(' ')[0];
+document.getElementById('greetingEl').textContent = `Hey, ${firstName} 👋`;
+if (user?.picture) {
+  document.getElementById('avatarWrap').innerHTML =
+    `<img src="${user.picture}" alt="${user.name}" />`;
+}
+
+document.getElementById('signOutBtn').addEventListener('click', () => {
+  sessionStorage.removeItem('dashboard_user');
+  sessionStorage.removeItem('gmail_token');
+  window.location.href = 'login.html';
+});
+
+// ── Job Tracker ───────────────────────────────────────────────────────────────
+let allJobs = JSON.parse(localStorage.getItem('job_tracker') || '[]');
+let activeFilter = 'all';
+
+function statusClass(s) {
+  return { applied: 's-applied', interview: 's-interview', offer: 's-offer',
+           rejected: 's-rejected', ghosted: 's-ghosted' }[s] || 's-applied';
+}
+function statusLabel(s) {
+  return { applied: '✉️ Applied', interview: '💬 Interview', offer: '🎉 Offer',
+           rejected: '❌ Rejected', ghosted: '👻 Ghosted' }[s] || s;
+}
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-AU', { day:'numeric', month:'short', year:'2-digit' });
+}
+
+function renderJobs() {
+  const q = (document.getElementById('jobSearch')?.value || '').toLowerCase();
+  const rows = allJobs.filter(j => {
+    const matchFilter = activeFilter === 'all' || j.status === activeFilter;
+    const matchSearch = !q || j.company.toLowerCase().includes(q) || j.role.toLowerCase().includes(q);
+    return matchFilter && matchSearch;
+  });
+
+  const tbody = document.getElementById('jobTableBody');
+  if (rows.length === 0) {
+    tbody.innerHTML = '';
+    document.getElementById('jobEmpty').style.display = 'block';
+    document.getElementById('jobTableWrap').style.display = 'none';
+  } else {
+    document.getElementById('jobEmpty').style.display = 'none';
+    document.getElementById('jobTableWrap').style.display = 'block';
+    tbody.innerHTML = rows.map(j => `
+      <tr>
+        <td class="co-name">${escHtml(j.company)}</td>
+        <td class="role-name">${escHtml(j.role)}</td>
+        <td><span class="status-badge ${statusClass(j.status)}">${statusLabel(j.status)}</span></td>
+        <td class="date-cell">${fmtDate(j.date)}</td>
+        <td style="color:rgba(255,255,255,.55);font-size:12px">${escHtml(j.source || 'Gmail')}</td>
+      </tr>`).join('');
+  }
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showJobUI() {
+  document.getElementById('connectBanner').style.display = 'none';
+  document.getElementById('jobToolbar').style.display = 'flex';
+  if (allJobs.length > 0) {
+    document.getElementById('jobTableWrap').style.display = 'block';
+  } else {
+    document.getElementById('jobEmpty').style.display = 'block';
+  }
+  renderJobs();
+}
+
+// Filter buttons
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    renderJobs();
+  });
+});
+
+// Search
+document.getElementById('jobSearch')?.addEventListener('input', renderJobs);
+
+// ── Gmail OAuth + API ─────────────────────────────────────────────────────────
+let gmailToken = sessionStorage.getItem('gmail_token');
+if (gmailToken) showJobUI();
+
+document.getElementById('connectGmailBtn').addEventListener('click', authoriseGmail);
+document.getElementById('syncBtn').addEventListener('click', () => {
+  if (!gmailToken) { authoriseGmail(); return; }
+  fetchGmailApplications(gmailToken);
+});
+
+function authoriseGmail() {
+  if (GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') {
+    alert('Google OAuth is not yet configured.\n\nTo enable Gmail sync:\n1. Create a project at console.cloud.google.com\n2. Enable the Gmail API\n3. Create OAuth 2.0 credentials\n4. Replace YOUR_GOOGLE_CLIENT_ID in both dashboard files');
+    return;
+  }
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: GMAIL_SCOPE,
+    callback: (resp) => {
+      if (resp.error) { console.error(resp); return; }
+      gmailToken = resp.access_token;
+      sessionStorage.setItem('gmail_token', gmailToken);
+      fetchGmailApplications(gmailToken);
+    },
+  });
+  client.requestAccessToken();
+}
+
+async function fetchGmailApplications(token) {
+  const btn = document.getElementById('syncBtn');
+  const icon = document.getElementById('syncIcon');
+  btn.disabled = true;
+  icon.innerHTML = '<span class="spinner">⏳</span>';
+
+  try {
+    // Search sent mail for job application keywords
+    const query = encodeURIComponent('in:sent (subject:application OR subject:applied OR subject:"cover letter" OR subject:"job application")');
+    const listRes = await fetch(
+      `https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${query}&maxResults=50`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const listData = await listRes.json();
+    const messages = listData.messages || [];
+
+    const parsed = await Promise.all(messages.map(m => fetchAndParseMessage(token, m.id)));
+    const fresh = parsed.filter(Boolean);
+
+    // Merge with existing (deduplicate by id)
+    const existingIds = new Set(allJobs.map(j => j.id));
+    const newJobs = fresh.filter(j => !existingIds.has(j.id));
+    allJobs = [...newJobs, ...allJobs].sort((a,b) => new Date(b.date) - new Date(a.date));
+    localStorage.setItem('job_tracker', JSON.stringify(allJobs));
+    showJobUI();
+  } catch (err) {
+    console.error('Gmail sync error:', err);
+    alert('Gmail sync failed. Check the console for details.');
+  } finally {
+    btn.disabled = false;
+    icon.textContent = '🔄';
+  }
+}
+
+async function fetchAndParseMessage(token, id) {
+  try {
+    const res = await fetch(
+      `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=metadata&metadataHeaders=Subject&metadataHeaders=Date&metadataHeaders=To`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const msg = await res.json();
+    const headers = Object.fromEntries((msg.payload?.headers || []).map(h => [h.name, h.value]));
+    const subject = headers['Subject'] || '';
+    const date = headers['Date'] ? new Date(headers['Date']).toISOString() : new Date().toISOString();
+    const to = headers['To'] || '';
+
+    // Extract company from To domain
+    const domainMatch = to.match(/@([\w.-]+)/);
+    const domain = domainMatch ? domainMatch[1].replace(/\.(com|com\.au|au|org|net|io)$/, '') : '';
+    const company = domain
+      ? domain.split('.').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+      : 'Unknown';
+
+    // Extract role from subject
+    const roleMatch = subject.match(/(?:application|applied|applying)\s+(?:for\s+)?(.+?)(?:\s+at\s+.+)?$/i);
+    const role = roleMatch ? roleMatch[1].trim() : subject.replace(/application|applied|job/gi, '').trim() || 'Role';
+
+    return { id, company, role, date, status: 'applied', source: 'Gmail' };
+  } catch { return null; }
+}
+
+document.getElementById('helpLink')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  alert('Job Tracker — How it works:\n\n1. Click "Connect Gmail" to grant read-only access\n2. The tracker searches your Sent folder for emails with keywords like "application", "applied", or "cover letter"\n3. It extracts the company name from the recipient domain and the role from the subject line\n4. You can manually add a "Job Applications" label in Gmail to organise emails\n5. Click "Sync Gmail" at any time to pull in new applications');
+});
+</script>
+</body>
+</html>
