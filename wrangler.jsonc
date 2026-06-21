@@ -12,3 +12,6 @@
     "nodejs_compat"
   ]
 }
+- uses: actions/setup-node@v4
+  with:
+    node-version: '22' # Update to your desired version (e.g., 20, 22, 24)
