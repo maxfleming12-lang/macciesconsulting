@@ -4,3 +4,13 @@
 !.dev.vars.example
 .env*
 !.env.example
+
+# 11ty build output
+_site/
+
+# Node
+node_modules/
+
+# Local Claude Code config (launch config, local permissions)
+.claude/
+

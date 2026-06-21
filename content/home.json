@@ -1,0 +1,78 @@
+{
+  "name": "Maxwell Fleming",
+  "firstName": "Maxwell",
+  "lastName": "Fleming",
+  "subtitle": "Peer Support Worker • future foster carer • occasional menace to boring websites",
+  "tagline": "Warm human. Good chats. Strong opinions. Dog supervision always active.",
+  "playfulMini": "🐶 Gracie-approved internet corner",
+  "proBio": "Peer Support Worker with experience in mental health and community support across NSW. Strong focus on communication, lived experience advocacy, and building trust with clients. Background in business operations and accommodation management, bringing a practical and people-focused approach to every role.",
+  "badges": ["Playful & quirky", "Powered by mild chaos"],
+  "contact": {
+    "phone": "041916492",
+    "email": "maxfleming12@gmail.com"
+  },
+  "links": [
+    {
+      "icon": "📞",
+      "label": "Call me",
+      "description": "Fastest old-school option",
+      "href": "tel:041916492",
+      "arrow": "→",
+      "external": false
+    },
+    {
+      "icon": "📧",
+      "label": "Email me",
+      "description": "For sane and semi-sane messages",
+      "href": "mailto:maxfleming12@gmail.com",
+      "arrow": "→",
+      "external": false
+    },
+    {
+      "icon": "📸",
+      "label": "Instagram",
+      "description": "Bits of life, chaos, and vibes",
+      "href": "https://www.instagram.com/cootaboi/",
+      "arrow": "↗",
+      "external": true
+    },
+    {
+      "icon": "👤",
+      "label": "Facebook",
+      "description": "A little more 2012, still valid",
+      "href": "https://www.facebook.com/maccie88",
+      "arrow": "↗",
+      "external": true
+    }
+  ],
+  "sections": {
+    "links": {
+      "title": "Pick your adventure",
+      "subtitle": "Everything you probably came here for, minus the corporate waffle."
+    },
+    "extras": {
+      "title": "Extras because basic is rude",
+      "subtitle": "This site comes with optional nonsense and one extremely important staff member."
+    }
+  },
+  "moods": [
+    "Running on vibes, instinct, and whatever snack is closest.",
+    "Currently available for chats, caffeine, and avoiding nonsense.",
+    "Doing my best. Some assembly clearly required.",
+    "Emotionally supported by a whippet and mild delusion.",
+    "Polite on the outside. Internally writing a strongly worded memo.",
+    "Looking calm. Absolutely not calm. Great posture though.",
+    "Open for business-ish. Closed for nonsense.",
+    "Holding it together like a zip tie in a cyclone."
+  ],
+  "defaultMood": "Today's setting: professionally held together with a suspicious amount of duct tape.",
+  "gracieModal": {
+    "title": "Meet Gracie 🐶",
+    "lines": [
+      "Hi, I'm Gracie. I supervise everything.",
+      "He thinks he runs this site. He doesn't.",
+      "Whippet. Fashion icon. Emotional support noodle. Full-time household manager."
+    ]
+  },
+  "footer": "Made with ✨, actual personality, and very firm anti-boring beliefs."
+}

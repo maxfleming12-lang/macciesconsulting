@@ -1,0 +1,135 @@
+---
+permalink: /index.html
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ home.name }} | Link Hub</title>
+  <meta name="description" content="Playful personal link hub for {{ home.name }}." />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+</head>
+<body>
+
+  <div class="sparkles" aria-hidden="true">
+    <span style="top:9%; left:12%; animation-delay:.2s"></span>
+    <span style="top:18%; left:82%; animation-delay:1.4s"></span>
+    <span style="top:37%; left:7%; animation-delay:2.1s"></span>
+    <span style="top:56%; left:88%; animation-delay:.8s"></span>
+    <span style="top:72%; left:14%; animation-delay:1.9s"></span>
+    <span style="top:83%; left:74%; animation-delay:2.7s"></span>
+  </div>
+
+  <main class="wrap">
+    <section class="hero card">
+      <div class="topbar">
+        <div class="badge-row">
+          <a class="badge badge-portal" href="/dashboard/login.html">🔐 My Dashboard</a>
+          {% for badge in home.badges %}
+            <span class="badge{% if loop.last %} playful-only{% endif %}">{{ badge }}</span>
+          {% endfor %}
+        </div>
+        <div class="switches">
+          <button class="toggle" id="modeToggle" type="button">💼 Professional mode</button>
+          <button class="toggle" id="musicToggle" type="button" aria-pressed="false">🎵 Music off</button>
+        </div>
+      </div>
+
+      <div class="profile-grid">
+        <div class="avatar-wrap">
+          <div class="avatar-ring"></div>
+          <img class="avatar" src="/assets/images/avatar.jpg" alt="Portrait of {{ home.name }}" />
+        </div>
+        <div>
+          <h1 class="title">{{ home.firstName }}<br />{{ home.lastName }}</h1>
+          <p class="subtitle">{{ home.subtitle }}</p>
+          <p class="tagline">{{ home.tagline }}</p>
+          <div class="mini playful-only">{{ home.playfulMini }}</div>
+          <div class="pro-only pro-bio">{{ home.proBio }}</div>
+          <a href="/Maxwell-Fleming-Resume-2026.pdf" target="_blank" class="pro-only resume-btn">📄 View Resume</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="sections">
+      <div class="panel card">
+        <h2>{{ home.sections.links.title }}</h2>
+        <p>{{ home.sections.links.subtitle }}</p>
+
+        <div class="link-list">
+          {% for link in home.links %}
+            <a class="link-btn" href="{{ link.href }}"
+               {% if link.external %}target="_blank" rel="noopener noreferrer"{% endif %}>
+              <span class="left">
+                <span class="icon">{{ link.icon }}</span>
+                <span>{{ link.label }}<span class="small">{{ link.description }}</span></span>
+              </span>
+              <span class="arrow">{{ link.arrow }}</span>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <aside class="panel card">
+        <h2>{{ home.sections.extras.title }}</h2>
+        <p>{{ home.sections.extras.subtitle }}</p>
+
+        <div class="tools">
+          <button class="tool-btn" type="button" id="copyPhone">📲 Copy phone</button>
+          <button class="tool-btn" type="button" id="copyEmail">✉️ Copy email</button>
+          <button class="tool-btn playful-only" type="button" id="moodBtn">🔥 Random mood</button>
+          <button class="tool-btn playful-only" type="button" id="gracieBtn">🐶 Meet Gracie</button>
+        </div>
+
+        <div class="mood-box playful-only" id="moodBox">{{ home.defaultMood }}</div>
+        <div class="tiny-note">Music toggle uses a built-in tiny synth loop — no external audio files needed.</div>
+      </aside>
+    </section>
+
+    <div class="footer">{{ home.footer }}</div>
+  </main>
+
+  <div class="modal" id="gracieModal" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-body">
+        <h3>{{ home.gracieModal.title }}</h3>
+        {% for line in home.gracieModal.lines %}
+          <p>{{ line }}</p>
+        {% endfor %}
+        <div class="modal-actions">
+          <button class="primary" type="button" id="boopBtn">Boop approved</button>
+          <button class="ghost" type="button" id="closeModal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Inline mood data from content file so JS can access it
+    const MOODS = {{ home.moods | dump | safe }};
+    const PHONE = {{ home.contact.phone | dump | safe }};
+    const EMAIL = {{ home.contact.email | dump | safe }};
+  </script>
+  <script src="/assets/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+  <script>
+    if (window.tsParticles?.load) {
+      tsParticles.load("tsparticles", {
+        particles: {
+          number: { value: 30 },
+          color: { value: "#ffffff" },
+          size: { value: 3 },
+          move: { enable: true, speed: 1 },
+          opacity: { value: 0.5 }
+        }
+      });
+    } else {
+      console.warn('tsParticles failed to load; continuing without background particles.');
+    }
+  </script>
+
+</body>
+</html>
