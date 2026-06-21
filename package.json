@@ -4,9 +4,9 @@
   "private": true,
   "description": "Maxwell Fleming personal link hub — built with 11ty",
   "scripts": {
-    "dev": "eleventy --serve --port=5678",
+    "dev": "eleventy --serve --port=${PORT:-5678}",
     "build": "eleventy",
-    "start": "eleventy --serve --port=5678"
+    "start": "eleventy --serve --port=${PORT:-5678}"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0"
