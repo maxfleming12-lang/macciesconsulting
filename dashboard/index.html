@@ -379,6 +379,127 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .spinner { display: inline-block; animation: spin .7s linear infinite; }
 
+    /* ── Edit mode ── */
+    .edit-toggle {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.3);
+      background: rgba(255,255,255,.1);
+      color: #fff; font-size: 13px; font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+      white-space: nowrap;
+    }
+    .edit-toggle:hover { background: rgba(255,255,255,.22); }
+    .edit-toggle.active { background: rgba(255,255,255,.92); color: #1f1635; border-color: transparent; }
+
+    .link-tile-wrap { position: relative; }
+
+    .tile-actions {
+      display: none;
+      position: absolute;
+      top: -7px; right: -7px;
+      gap: 4px;
+    }
+    .edit-mode .link-tile-wrap .tile-actions { display: flex; }
+
+    .tile-del {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: none; background: #ef4444; color: #fff;
+      font-size: 11px; cursor: pointer; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .tile-del:hover { background: #dc2626; }
+
+    .edit-mode .space-link { cursor: pointer; }
+    .edit-mode .space-link:hover { border-color: rgba(255,255,255,.65); }
+
+    .add-link-tile {
+      display: none;
+      align-items: center; justify-content: center;
+      gap: 8px;
+      padding: 13px 16px;
+      border-radius: 14px;
+      border: 2px dashed rgba(255,255,255,.3);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.6);
+      font-size: 13px; font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, border-color .2s, color .2s;
+      width: 100%;
+    }
+    .add-link-tile:hover { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.5); color: #fff; }
+    .edit-mode .add-link-tile { display: flex; }
+
+    /* ── Link modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.5);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal-box {
+      background: rgba(22,14,50,.96);
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 20px; padding: 28px;
+      width: min(100%, 420px);
+      box-shadow: 0 24px 60px rgba(0,0,0,.6);
+      transform: translateY(14px); transition: transform .2s;
+    }
+    .modal-overlay.open .modal-box { transform: translateY(0); }
+
+    .modal-title { font-size: 17px; font-weight: 800; margin-bottom: 20px; }
+
+    .mfield { margin-bottom: 14px; }
+    .mfield label {
+      display: block; font-size: 11px; font-weight: 700;
+      color: rgba(255,255,255,.6); margin-bottom: 5px;
+      text-transform: uppercase; letter-spacing: .06em;
+    }
+    .mfield input {
+      width: 100%; padding: 10px 13px;
+      border-radius: 10px; border: 1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.09); color: #fff; font-size: 14px; outline: none;
+      transition: border-color .2s;
+    }
+    .mfield input::placeholder { color: rgba(255,255,255,.3); }
+    .mfield input:focus { border-color: rgba(255,255,255,.5); }
+
+    .dot-picker { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+    .dot-swatch {
+      width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+      border: 3px solid transparent; transition: transform .15s, border-color .15s;
+    }
+    .dot-swatch:hover { transform: scale(1.15); }
+    .dot-swatch.selected { border-color: #fff; }
+
+    .modal-actions { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
+    .btn-save {
+      flex: 1; padding: 11px; border: none; border-radius: 12px;
+      background: rgba(255,255,255,.94); color: #1f1635;
+      font-size: 14px; font-weight: 800; cursor: pointer; transition: transform .15s;
+    }
+    .btn-save:hover { transform: translateY(-1px); }
+    .btn-cancel {
+      padding: 11px 18px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.22); background: transparent;
+      color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .2s;
+    }
+    .btn-cancel:hover { background: rgba(255,255,255,.1); }
+    .btn-delete {
+      padding: 11px 14px; border-radius: 12px;
+      border: 1px solid rgba(255,100,100,.35); background: rgba(255,80,80,.15);
+      color: #fca5a5; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .2s;
+    }
+    .btn-delete:hover { background: rgba(255,80,80,.3); }
+
     /* Responsive */
     @media (max-width: 600px) {
       .card { padding: 20px 16px; }
@@ -407,57 +528,15 @@
   </div>
 
   <!-- ── Personal Space ─────────────────────────────────── -->
-  <div class="card">
+  <div class="card" id="personalSpaceCard">
     <div class="card-header">
       <div>
         <div class="card-title"><span class="emoji">🏠</span> Personal Space</div>
         <div class="card-sub">Your private links — internal apps, staging, tools</div>
       </div>
+      <button class="edit-toggle" id="editToggle" type="button">✏️ Edit</button>
     </div>
-
-    <div class="link-grid" id="personalLinks">
-      <!-- Add / remove entries here as needed -->
-      <a class="space-link" href="https://console.cloud.google.com" target="_blank" rel="noopener">
-        <span class="icon">☁️</span>
-        <span class="info"><span class="name">Google Cloud</span><span class="desc">APIs &amp; infrastructure</span></span>
-        <span class="dot dot-blue"></span>
-      </a>
-      <a class="space-link" href="https://github.com/maxfleming12-lang" target="_blank" rel="noopener">
-        <span class="icon">🐙</span>
-        <span class="info"><span class="name">GitHub</span><span class="desc">Repos &amp; code</span></span>
-        <span class="dot dot-purple"></span>
-      </a>
-      <a class="space-link" href="https://macciesconsulting.au" target="_blank" rel="noopener">
-        <span class="icon">💼</span>
-        <span class="info"><span class="name">Maccies Consulting</span><span class="desc">Business site</span></span>
-        <span class="dot dot-pink"></span>
-      </a>
-      <a class="space-link" href="https://mail.google.com" target="_blank" rel="noopener">
-        <span class="icon">📧</span>
-        <span class="info"><span class="name">Gmail</span><span class="desc">maxfleming@macciesconsulting.au</span></span>
-        <span class="dot dot-orange"></span>
-      </a>
-      <a class="space-link" href="https://calendar.google.com" target="_blank" rel="noopener">
-        <span class="icon">📅</span>
-        <span class="info"><span class="name">Calendar</span><span class="desc">Schedule &amp; meetings</span></span>
-        <span class="dot dot-green"></span>
-      </a>
-      <a class="space-link" href="https://drive.google.com" target="_blank" rel="noopener">
-        <span class="icon">📁</span>
-        <span class="info"><span class="name">Google Drive</span><span class="desc">Files &amp; documents</span></span>
-        <span class="dot dot-yellow"></span>
-      </a>
-      <a class="space-link" href="https://www.linkedin.com/in/maxwell-fleming" target="_blank" rel="noopener">
-        <span class="icon">🔗</span>
-        <span class="info"><span class="name">LinkedIn</span><span class="desc">Professional profile</span></span>
-        <span class="dot dot-blue"></span>
-      </a>
-      <a class="space-link" href="../Maxwell-Fleming-Resume-2026.pdf" target="_blank">
-        <span class="icon">📄</span>
-        <span class="info"><span class="name">Resume 2026</span><span class="desc">Latest CV</span></span>
-        <span class="dot dot-pink"></span>
-      </a>
-    </div>
+    <div class="link-grid" id="personalLinks"></div>
   </div>
 
   <!-- ── Storage ────────────────────────────────────────── -->
@@ -554,6 +633,40 @@
   </div>
 
   <div class="footer">Maxwell's private dashboard · not for public eyes 🤫</div>
+</div>
+
+<!-- ── Link edit modal ── -->
+<div class="modal-overlay" id="linkModal">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle">＋ Add link</div>
+
+    <div class="mfield">
+      <label>Emoji icon</label>
+      <input id="fieldIcon" type="text" placeholder="🔗" maxlength="4" />
+    </div>
+    <div class="mfield">
+      <label>Name</label>
+      <input id="fieldName" type="text" placeholder="My App" />
+    </div>
+    <div class="mfield">
+      <label>Description</label>
+      <input id="fieldDesc" type="text" placeholder="Short description" />
+    </div>
+    <div class="mfield">
+      <label>URL</label>
+      <input id="fieldUrl" type="url" placeholder="https://…" />
+    </div>
+    <div class="mfield">
+      <label>Colour</label>
+      <div class="dot-picker" id="dotPicker"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-save" onclick="saveModal()">Save</button>
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-delete" id="btnDelete" onclick="deleteFromModal()" style="display:none">Delete</button>
+    </div>
+  </div>
 </div>
 
 <!-- Google Identity Services -->
@@ -755,6 +868,153 @@ document.getElementById('helpLink')?.addEventListener('click', (e) => {
   e.preventDefault();
   alert('Job Tracker — How it works:\n\n1. Click "Connect Gmail" to grant read-only access\n2. The tracker searches your Sent folder for emails with keywords like "application", "applied", or "cover letter"\n3. It extracts the company name from the recipient domain and the role from the subject line\n4. You can manually add a "Job Applications" label in Gmail to organise emails\n5. Click "Sync Gmail" at any time to pull in new applications');
 });
+
+// ── Personal Space — editable links ──────────────────────────────────────────
+const DEFAULT_LINKS = [
+  { id:'1', icon:'☁️', name:'Google Cloud',      desc:'APIs & infrastructure',  url:'https://console.cloud.google.com',            dot:'dot-blue'   },
+  { id:'2', icon:'🐙', name:'GitHub',             desc:'Repos & code',           url:'https://github.com/maxfleming12-lang',        dot:'dot-purple' },
+  { id:'3', icon:'💼', name:'Maccies Consulting', desc:'Business site',          url:'https://macciesconsulting.au',                dot:'dot-pink'   },
+  { id:'4', icon:'📧', name:'Gmail',              desc:'maxfleming12@gmail.com', url:'https://mail.google.com',                     dot:'dot-orange' },
+  { id:'5', icon:'📅', name:'Calendar',           desc:'Schedule & meetings',    url:'https://calendar.google.com',                 dot:'dot-green'  },
+  { id:'6', icon:'📁', name:'Google Drive',       desc:'Files & documents',      url:'https://drive.google.com',                   dot:'dot-yellow' },
+  { id:'7', icon:'🔗', name:'LinkedIn',           desc:'Professional profile',   url:'https://www.linkedin.com/in/maxwell-fleming', dot:'dot-blue'   },
+  { id:'8', icon:'📄', name:'Resume 2026',        desc:'Latest CV',              url:'../Maxwell-Fleming-Resume-2026.pdf',          dot:'dot-pink'   },
+];
+
+const DOT_COLOURS = [
+  { cls:'dot-pink',   hex:'#ff6ec7' },
+  { cls:'dot-purple', hex:'#a78bfa' },
+  { cls:'dot-blue',   hex:'#38bdf8' },
+  { cls:'dot-green',  hex:'#4ade80' },
+  { cls:'dot-orange', hex:'#fb923c' },
+  { cls:'dot-yellow', hex:'#fbbf24' },
+];
+
+// Build dot picker swatches
+document.getElementById('dotPicker').innerHTML = DOT_COLOURS.map(d =>
+  `<span class="dot-swatch" data-dot="${d.cls}" style="background:${d.hex}" title="${d.cls.replace('dot-','')}"></span>`
+).join('');
+document.querySelectorAll('.dot-swatch').forEach(s =>
+  s.addEventListener('click', () => {
+    document.querySelectorAll('.dot-swatch').forEach(x => x.classList.remove('selected'));
+    s.classList.add('selected');
+  })
+);
+
+function loadLinks() {
+  try { const s = localStorage.getItem('personal_links'); return s ? JSON.parse(s) : DEFAULT_LINKS; }
+  catch { return DEFAULT_LINKS; }
+}
+function saveLinks(arr) { localStorage.setItem('personal_links', JSON.stringify(arr)); }
+
+let links = loadLinks();
+let editMode = false;
+let editingId = null;
+
+function renderLinks() {
+  const grid = document.getElementById('personalLinks');
+  const card = document.getElementById('personalSpaceCard');
+  card.classList.toggle('edit-mode', editMode);
+
+  grid.innerHTML = links.map(l => `
+    <div class="link-tile-wrap">
+      <a class="space-link" href="${editMode ? '#' : escHtml(l.url)}"
+         ${editMode ? '' : 'target="_blank" rel="noopener"'}
+         data-id="${escHtml(l.id)}">
+        <span class="icon">${escHtml(l.icon)}</span>
+        <span class="info">
+          <span class="name">${escHtml(l.name)}</span>
+          <span class="desc">${escHtml(l.desc)}</span>
+        </span>
+        <span class="dot ${escHtml(l.dot)}"></span>
+      </a>
+      <div class="tile-actions">
+        <button class="tile-del" data-del="${escHtml(l.id)}" title="Remove">✕</button>
+      </div>
+    </div>`).join('') +
+    `<button class="add-link-tile" id="addLinkBtn" type="button">＋ Add link</button>`;
+
+  // events — edit click on tile
+  grid.querySelectorAll('.space-link').forEach(a =>
+    a.addEventListener('click', e => {
+      if (!editMode) return;
+      e.preventDefault();
+      openModal(a.dataset.id);
+    })
+  );
+  // delete buttons
+  grid.querySelectorAll('[data-del]').forEach(btn =>
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      links = links.filter(l => l.id !== btn.dataset.del);
+      saveLinks(links);
+      renderLinks();
+    })
+  );
+  // add button
+  document.getElementById('addLinkBtn')?.addEventListener('click', () => openModal(null));
+}
+
+function toggleEditMode() {
+  editMode = !editMode;
+  const btn = document.getElementById('editToggle');
+  btn.textContent = editMode ? '✓ Done' : '✏️ Edit';
+  btn.classList.toggle('active', editMode);
+  renderLinks();
+}
+document.getElementById('editToggle').addEventListener('click', toggleEditMode);
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
+function openModal(id) {
+  editingId = id;
+  const l = id ? links.find(x => x.id === id) : null;
+  document.getElementById('modalTitle').textContent = id ? '✏️ Edit link' : '＋ Add link';
+  document.getElementById('fieldIcon').value = l?.icon || '';
+  document.getElementById('fieldName').value = l?.name || '';
+  document.getElementById('fieldDesc').value = l?.desc || '';
+  document.getElementById('fieldUrl').value  = l?.url  || '';
+  const sel = l?.dot || 'dot-blue';
+  document.querySelectorAll('.dot-swatch').forEach(s =>
+    s.classList.toggle('selected', s.dataset.dot === sel)
+  );
+  document.getElementById('btnDelete').style.display = id ? 'inline-block' : 'none';
+  document.getElementById('linkModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('linkModal').classList.remove('open');
+}
+
+function saveModal() {
+  const icon = document.getElementById('fieldIcon').value.trim() || '🔗';
+  const name = document.getElementById('fieldName').value.trim();
+  const desc = document.getElementById('fieldDesc').value.trim();
+  const url  = document.getElementById('fieldUrl').value.trim();
+  if (!name || !url) { alert('Name and URL are required.'); return; }
+  const dot = document.querySelector('.dot-swatch.selected')?.dataset.dot || 'dot-blue';
+  if (editingId) {
+    links = links.map(l => l.id === editingId ? { ...l, icon, name, desc, url, dot } : l);
+  } else {
+    links.push({ id: String(Date.now()), icon, name, desc, url, dot });
+  }
+  saveLinks(links);
+  renderLinks();
+  closeModal();
+}
+
+function deleteFromModal() {
+  if (!editingId) return;
+  links = links.filter(l => l.id !== editingId);
+  saveLinks(links);
+  renderLinks();
+  closeModal();
+}
+
+document.getElementById('linkModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('linkModal')) closeModal();
+});
+
+renderLinks();
 </script>
 </body>
 </html>
