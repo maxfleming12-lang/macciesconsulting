@@ -274,6 +274,20 @@
     }
     .sync-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,.2); }
     .sync-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .tracker-actions { display: flex; align-items: center; gap: 8px; }
+    .sheet-link {
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.22);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background .15s;
+    }
+    .sheet-link:hover { background: rgba(255,255,255,.24); }
 
     /* Job table */
     .job-table-wrap { overflow-x: auto; border-radius: 14px; }
@@ -577,58 +591,46 @@
     <div class="card-header">
       <div>
         <div class="card-title"><span class="emoji">🎯</span> Job Search Tracker</div>
-        <div class="card-sub">Applications pulled from your Gmail — powered by Gmail API</div>
+        <div class="card-sub">Live from your <strong>Job Applications Tracking Spreadsheet</strong></div>
       </div>
-      <button class="sync-btn" id="syncBtn" type="button">
-        <span id="syncIcon">🔄</span> Sync Gmail
-      </button>
+      <div class="tracker-actions">
+        <a class="sheet-link" id="openSheetBtn" target="_blank" rel="noopener">📊 Open in Sheets</a>
+        <button class="sync-btn" id="syncBtn" type="button">
+          <span id="syncIcon">🔄</span> Refresh
+        </button>
+      </div>
     </div>
 
-    <!-- Connect Gmail banner (shown until authorised) -->
+    <!-- Connect banner (shown until authorised) -->
     <div class="connect-banner" id="connectBanner">
-      <span style="font-size:28px">📬</span>
+      <span style="font-size:28px">📊</span>
       <div class="cb-text">
-        <div class="cb-title">Connect your Gmail to auto-import applications</div>
-        <div class="cb-sub">Uses Gmail API read-only scope. Searches for sent job application emails and organises them here.</div>
+        <div class="cb-title">Connect to load your Job Applications sheet</div>
+        <div class="cb-sub">Read-only access to your Google Sheet. Your data stays private to your Google account.</div>
       </div>
       <button class="connect-btn" id="connectGmailBtn" type="button">
         <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.8 2.5 30.3 0 24 0 14.7 0 6.7 5.5 2.9 13.5l7.8 6.1C12.5 13.2 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.4c-.5 2.9-2.2 5.4-4.7 7l7.3 5.7c4.3-4 6.8-9.9 6.8-16.7z"/><path fill="#FBBC05" d="M10.7 28.4A14.6 14.6 0 0 1 9.5 24c0-1.5.3-3 .8-4.4l-7.8-6C.9 16.6 0 20.2 0 24c0 3.8.9 7.4 2.6 10.5l8.1-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.3-5.7c-2.2 1.5-5 2.3-8.6 2.3-6.1 0-11.4-3.7-13.3-9l-8.1 6.1C6.7 42.5 14.7 48 24 48z"/></svg>
-        Connect Gmail
+        Connect Google
       </button>
     </div>
 
-    <!-- Status filters -->
+    <!-- Search -->
     <div class="toolbar" id="jobToolbar" style="display:none">
-      <input class="search-box" id="jobSearch" type="search" placeholder="Search company or role…" />
-      <button class="filter-btn active" data-filter="all">All</button>
-      <button class="filter-btn" data-filter="applied">Applied</button>
-      <button class="filter-btn" data-filter="interview">Interview</button>
-      <button class="filter-btn" data-filter="offer">Offer</button>
-      <button class="filter-btn" data-filter="rejected">Rejected</button>
+      <input class="search-box" id="jobSearch" type="search" placeholder="Search role, employer, location…" />
     </div>
 
-    <!-- Table -->
+    <!-- Table (header + body built dynamically from the sheet) -->
     <div class="job-table-wrap" id="jobTableWrap" style="display:none">
       <table>
-        <thead>
-          <tr>
-            <th>Company</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th>Date</th>
-            <th>Source</th>
-          </tr>
-        </thead>
+        <thead id="jobTableHead"></thead>
         <tbody id="jobTableBody"></tbody>
       </table>
     </div>
 
-    <!-- Empty state -->
+    <!-- Empty / loading state -->
     <div class="empty-state" id="jobEmpty" style="display:none">
       <div class="big">📭</div>
-      <p>No applications found.<br>
-         Make sure you have a <strong>Job Applications</strong> label in Gmail,<br>
-         or try syncing again. <a href="#" id="helpLink">How it works →</a></p>
+      <p id="jobEmptyMsg">No rows found in your sheet yet.</p>
     </div>
   </div>
 
@@ -677,7 +679,11 @@
 // Fill these in after setting up a Google Cloud project:
 //   https://console.cloud.google.com → APIs & Services → Credentials
 const GOOGLE_CLIENT_ID = '1043849806484-mgf892e62l2f7srp9rr43d2muebi4en4.apps.googleusercontent.com';
-const GMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.readonly';
+// Job Tracker reads this Google Sheet (read-only) and displays it in the dashboard.
+const SHEET_ID    = '1t8V1DxbAzbm_6LErXfg44ipwMsTLVrff1JLNX6UBejA';
+const SHEET_RANGE = 'A1:Z1000';
+const SHEET_URL   = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
+const SHEETS_SCOPE = 'https://www.googleapis.com/auth/spreadsheets.readonly';
 
 // ── Auth guard ────────────────────────────────────────────────────────────────
 const user = (() => {
@@ -699,175 +705,145 @@ if (user?.picture) {
 
 document.getElementById('signOutBtn').addEventListener('click', () => {
   sessionStorage.removeItem('dashboard_user');
-  sessionStorage.removeItem('gmail_token');
+  sessionStorage.removeItem('sheets_token');
   window.location.href = 'login.html';
 });
 
-// ── Job Tracker ───────────────────────────────────────────────────────────────
-let allJobs = JSON.parse(localStorage.getItem('job_tracker') || '[]');
-let activeFilter = 'all';
+// ── Job Tracker (reads your Google Sheet, read-only) ──────────────────────────
+let sheetData = { headers: [], rows: [] };
 
-function statusClass(s) {
-  return { applied: 's-applied', interview: 's-interview', offer: 's-offer',
-           rejected: 's-rejected', ghosted: 's-ghosted' }[s] || 's-applied';
-}
-function statusLabel(s) {
-  return { applied: '✉️ Applied', interview: '💬 Interview', offer: '🎉 Offer',
-           rejected: '❌ Rejected', ghosted: '👻 Ghosted' }[s] || s;
-}
-function fmtDate(iso) {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleDateString('en-AU', { day:'numeric', month:'short', year:'2-digit' });
-}
-
-function renderJobs() {
-  const q = (document.getElementById('jobSearch')?.value || '').toLowerCase();
-  const rows = allJobs.filter(j => {
-    const matchFilter = activeFilter === 'all' || j.status === activeFilter;
-    const matchSearch = !q || j.company.toLowerCase().includes(q) || j.role.toLowerCase().includes(q);
-    return matchFilter && matchSearch;
-  });
-
-  const tbody = document.getElementById('jobTableBody');
-  if (rows.length === 0) {
-    tbody.innerHTML = '';
-    document.getElementById('jobEmpty').style.display = 'block';
-    document.getElementById('jobTableWrap').style.display = 'none';
-  } else {
-    document.getElementById('jobEmpty').style.display = 'none';
-    document.getElementById('jobTableWrap').style.display = 'block';
-    tbody.innerHTML = rows.map(j => `
-      <tr>
-        <td class="co-name">${escHtml(j.company)}</td>
-        <td class="role-name">${escHtml(j.role)}</td>
-        <td><span class="status-badge ${statusClass(j.status)}">${statusLabel(j.status)}</span></td>
-        <td class="date-cell">${fmtDate(j.date)}</td>
-        <td style="color:rgba(255,255,255,.55);font-size:12px">${escHtml(j.source || 'Gmail')}</td>
-      </tr>`).join('');
-  }
-}
+document.getElementById('openSheetBtn').href = SHEET_URL;
 
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// Colour the Application Status cell based on keywords in the free-text status.
+function statusClassFromText(t) {
+  const s = String(t).toLowerCase();
+  if (/offer/.test(s)) return 's-offer';
+  if (/interview/.test(s)) return 's-interview';
+  if (/strong interest|viewed by employer/.test(s)) return 's-interview';
+  if (/expired|no longer|unsuccessful|rejected|declined|closed/.test(s)) return 's-rejected';
+  return 's-applied';
+}
+
+function renderJobs() {
+  const q = (document.getElementById('jobSearch')?.value || '').toLowerCase();
+  const { headers, rows } = sheetData;
+  const head = document.getElementById('jobTableHead');
+  const body = document.getElementById('jobTableBody');
+  const wrap = document.getElementById('jobTableWrap');
+  const empty = document.getElementById('jobEmpty');
+
+  if (!rows.length) {
+    wrap.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+
+  const statusIdx = headers.findIndex(h => /status/i.test(h));
+  const filtered = q ? rows.filter(r => r.some(c => String(c).toLowerCase().includes(q))) : rows;
+
+  head.innerHTML = '<tr>' + headers.map(h => `<th>${escHtml(h)}</th>`).join('') + '</tr>';
+  body.innerHTML = filtered.map(r =>
+    '<tr>' + headers.map((_, i) => {
+      const val = r[i] != null ? r[i] : '';
+      if (i === statusIdx && String(val).trim()) {
+        return `<td><span class="status-badge ${statusClassFromText(val)}">${escHtml(val)}</span></td>`;
+      }
+      return `<td>${escHtml(val)}</td>`;
+    }).join('') + '</tr>'
+  ).join('');
+
+  empty.style.display = 'none';
+  wrap.style.display = 'block';
+}
+
 function showJobUI() {
   document.getElementById('connectBanner').style.display = 'none';
   document.getElementById('jobToolbar').style.display = 'flex';
-  if (allJobs.length > 0) {
-    document.getElementById('jobTableWrap').style.display = 'block';
-  } else {
-    document.getElementById('jobEmpty').style.display = 'block';
-  }
   renderJobs();
 }
-
-// Filter buttons
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    activeFilter = btn.dataset.filter;
-    renderJobs();
-  });
-});
 
 // Search
 document.getElementById('jobSearch')?.addEventListener('input', renderJobs);
 
-// ── Gmail OAuth + API ─────────────────────────────────────────────────────────
-let gmailToken = sessionStorage.getItem('gmail_token');
-if (gmailToken) showJobUI();
+// ── Google OAuth + Sheets API ─────────────────────────────────────────────────
+let sheetsToken = sessionStorage.getItem('sheets_token');
+if (sheetsToken) { showJobUI(); fetchSheet(sheetsToken); }
 
-document.getElementById('connectGmailBtn').addEventListener('click', authoriseGmail);
+document.getElementById('connectGmailBtn').addEventListener('click', authoriseSheets);
 document.getElementById('syncBtn').addEventListener('click', () => {
-  if (!gmailToken) { authoriseGmail(); return; }
-  fetchGmailApplications(gmailToken);
+  if (!sheetsToken) { authoriseSheets(); return; }
+  fetchSheet(sheetsToken);
 });
 
-function authoriseGmail() {
-  if (GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') {
-    alert('Google OAuth is not yet configured.\n\nTo enable Gmail sync:\n1. Create a project at console.cloud.google.com\n2. Enable the Gmail API\n3. Create OAuth 2.0 credentials\n4. Replace YOUR_GOOGLE_CLIENT_ID in both dashboard files');
-    return;
-  }
+function authoriseSheets() {
   const client = google.accounts.oauth2.initTokenClient({
     client_id: GOOGLE_CLIENT_ID,
-    scope: GMAIL_SCOPE,
+    scope: SHEETS_SCOPE,
     callback: (resp) => {
       if (resp.error) { console.error(resp); return; }
-      gmailToken = resp.access_token;
-      sessionStorage.setItem('gmail_token', gmailToken);
-      fetchGmailApplications(gmailToken);
+      sheetsToken = resp.access_token;
+      sessionStorage.setItem('sheets_token', sheetsToken);
+      showJobUI();
+      fetchSheet(sheetsToken);
     },
   });
   client.requestAccessToken({ prompt: 'select_account' });
 }
 
-async function fetchGmailApplications(token) {
-  const btn = document.getElementById('syncBtn');
+async function fetchSheet(token) {
+  const btn  = document.getElementById('syncBtn');
   const icon = document.getElementById('syncIcon');
+  const emptyMsg = document.getElementById('jobEmptyMsg');
   btn.disabled = true;
   icon.innerHTML = '<span class="spinner">⏳</span>';
+  if (emptyMsg) emptyMsg.textContent = 'Loading your sheet…';
 
   try {
-    // Search sent mail for job application keywords
-    const query = encodeURIComponent('in:sent (subject:application OR subject:applied OR subject:"cover letter" OR subject:"job application")');
-    const listRes = await fetch(
-      `https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${query}&maxResults=50`,
+    const res = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_RANGE)}?majorDimension=ROWS`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
-    const listData = await listRes.json();
-    const messages = listData.messages || [];
+    const data = await res.json();
 
-    const parsed = await Promise.all(messages.map(m => fetchAndParseMessage(token, m.id)));
-    const fresh = parsed.filter(Boolean);
+    // Surface API errors instead of silently showing an empty table.
+    if (!res.ok || data.error) {
+      const e = data.error || {};
+      if (res.status === 401) {
+        sessionStorage.removeItem('sheets_token');
+        sheetsToken = null;
+        alert('Your Google access expired. Please connect again.');
+        authoriseSheets();
+        return;
+      }
+      const reason = e.message || `${res.status} ${res.statusText}`;
+      const hint = res.status === 403
+        ? '\n\nThis usually means the Google Sheets API is not enabled in your Google Cloud project, or read access was not granted on the consent screen.'
+        : '';
+      console.error('Sheets API error:', data);
+      alert('Could not read your sheet:\n\n' + reason + hint);
+      if (emptyMsg) emptyMsg.textContent = 'Could not load the sheet — ' + reason;
+      return;
+    }
 
-    // Merge with existing (deduplicate by id)
-    const existingIds = new Set(allJobs.map(j => j.id));
-    const newJobs = fresh.filter(j => !existingIds.has(j.id));
-    allJobs = [...newJobs, ...allJobs].sort((a,b) => new Date(b.date) - new Date(a.date));
-    localStorage.setItem('job_tracker', JSON.stringify(allJobs));
+    const values = data.values || [];
+    sheetData = {
+      headers: values[0] || [],
+      rows: values.slice(1).filter(r => r.some(c => String(c).trim() !== '')),
+    };
+    if (emptyMsg) emptyMsg.textContent = 'No rows found in your sheet yet.';
     showJobUI();
   } catch (err) {
-    console.error('Gmail sync error:', err);
-    alert('Gmail sync failed. Check the console for details.');
+    console.error('Sheet load error:', err);
+    alert('Failed to load sheet: ' + (err?.message || err));
   } finally {
     btn.disabled = false;
     icon.textContent = '🔄';
   }
 }
-
-async function fetchAndParseMessage(token, id) {
-  try {
-    const res = await fetch(
-      `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=metadata&metadataHeaders=Subject&metadataHeaders=Date&metadataHeaders=To`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    const msg = await res.json();
-    const headers = Object.fromEntries((msg.payload?.headers || []).map(h => [h.name, h.value]));
-    const subject = headers['Subject'] || '';
-    const date = headers['Date'] ? new Date(headers['Date']).toISOString() : new Date().toISOString();
-    const to = headers['To'] || '';
-
-    // Extract company from To domain
-    const domainMatch = to.match(/@([\w.-]+)/);
-    const domain = domainMatch ? domainMatch[1].replace(/\.(com|com\.au|au|org|net|io)$/, '') : '';
-    const company = domain
-      ? domain.split('.').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-      : 'Unknown';
-
-    // Extract role from subject
-    const roleMatch = subject.match(/(?:application|applied|applying)\s+(?:for\s+)?(.+?)(?:\s+at\s+.+)?$/i);
-    const role = roleMatch ? roleMatch[1].trim() : subject.replace(/application|applied|job/gi, '').trim() || 'Role';
-
-    return { id, company, role, date, status: 'applied', source: 'Gmail' };
-  } catch { return null; }
-}
-
-document.getElementById('helpLink')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  alert('Job Tracker — How it works:\n\n1. Click "Connect Gmail" to grant read-only access\n2. The tracker searches your Sent folder for emails with keywords like "application", "applied", or "cover letter"\n3. It extracts the company name from the recipient domain and the role from the subject line\n4. You can manually add a "Job Applications" label in Gmail to organise emails\n5. Click "Sync Gmail" at any time to pull in new applications');
-});
 
 // ── Personal Space — editable links ──────────────────────────────────────────
 const DEFAULT_LINKS = [
