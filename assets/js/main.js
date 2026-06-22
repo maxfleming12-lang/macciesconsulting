@@ -78,14 +78,11 @@ function playTone(freq, start, duration, type = 'sine', gainValue = 0.03) {
   osc.stop(start + duration + 0.03);
 }
 
-function scheduleLoop() {
-  if (!musicOn) return;
-  const now   = audioCtx.currentTime + 0.05;
-  const notes = [392, 523.25, 587.33, 523.25, 392, 349.23, 392, 523.25];
-  notes.forEach((n, i) => playTone(n, now + i * 0.26, 0.18, i % 2 ? 'triangle' : 'sine', 0.025));
-  playTone(196, now, 2.0, 'sine', 0.012);
-  musicTimer = setTimeout(scheduleLoop, 2100);
-}
+<audio autoplay loop>
+  <source src="https://suno.com/playlist/91ca1095-67fc-4002-81c5-b3ae40adeb14" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
 
 async function toggleMusic() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
