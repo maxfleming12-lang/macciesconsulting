@@ -78,8 +78,8 @@
     "title": "See some of my work",
     "subtitle": "A couple of things I've built.",
     "links": [
-      { "icon": "📝", "label": "ShiftNotes Plus", "url": "https://shiftnotesplus.netlify.app/" },
-      { "icon": "📋", "label": "Maccies Forms", "url": "https://forms.macciesconsulting.au/" }
+      { "icon": "📝", "label": "Support Services Notes", "url": "https://shiftnotesplus.netlify.app/" },
+      { "icon": "📋", "label": "Professional Support Documents", "url": "https://forms.macciesconsulting.au/" }
     ]
   },
   "footer": "Made with ✨, actual personality, and very firm anti-boring beliefs."
