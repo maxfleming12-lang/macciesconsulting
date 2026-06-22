@@ -74,5 +74,13 @@
       "Whippet. Fashion icon. Emotional support noodle. Full-time household manager."
     ]
   },
+  "work": {
+    "title": "See some of my work",
+    "subtitle": "A couple of things I've built.",
+    "links": [
+      { "icon": "📝", "label": "Support Services Notes", "url": "https://shiftnotesplus.netlify.app/" },
+      { "icon": "📋", "label": "Professional Support Documents", "url": "https://forms.macciesconsulting.au/" }
+    ]
+  },
   "footer": "Made with ✨, actual personality, and very firm anti-boring beliefs."
 }
