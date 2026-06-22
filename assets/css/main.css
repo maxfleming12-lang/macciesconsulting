@@ -273,6 +273,28 @@
     }
     .tool-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,.2); }
 
+    /* See some of my work */
+    .work { margin-top: 18px; }
+    .work-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
+    .work-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1 1 220px;
+      border: 1px solid rgba(255,255,255,.24);
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      border-radius: 16px;
+      padding: 16px 18px;
+      font-size: 1rem;
+      font-weight: 900;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .work-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,.2); }
+    .work-icon { font-size: 1.2rem; }
+    .work-arrow { margin-left: auto; opacity: .7; }
+
     .mood-box {
       margin-top: 14px;
       min-height: 64px;
