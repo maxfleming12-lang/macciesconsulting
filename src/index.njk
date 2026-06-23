@@ -93,6 +93,20 @@ permalink: /index.html
     </section>
     {% endif %}
 
+    {% if home.music %}
+    <section class="work panel card">
+      <h2>{{ home.music.title }}</h2>
+      {% if home.music.subtitle %}<p>{{ home.music.subtitle }}</p>{% endif %}
+      <div class="work-links">
+        <a class="work-btn" href="{{ home.music.url }}" target="_blank" rel="noopener noreferrer">
+          <span class="work-icon">{{ home.music.icon }}</span>
+          <span>{{ home.music.linkLabel }}</span>
+          <span class="work-arrow">↗</span>
+        </a>
+      </div>
+    </section>
+    {% endif %}
+
     <div class="footer">{{ home.footer }}</div>
   </main>
 
