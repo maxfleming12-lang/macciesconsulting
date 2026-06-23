@@ -63,5 +63,12 @@
       { "icon": "📋", "label": "Professional Support Documents", "url": "https://forms.macciesconsulting.au/" }
     ]
   },
+  "music": {
+    "title": "My Music",
+    "subtitle": "Original songs I've written and produced — stream or download them all on Suno.",
+    "icon": "🎵",
+    "linkLabel": "Listen on Suno",
+    "url": "https://suno.com/s/xNXMBqNF5imPjqpQ"
+  },
   "footer": "© 2026 Maxwell Fleming · Hospitality & Accommodation Management"
 }
