@@ -2,12 +2,11 @@
   "name": "Maxwell Fleming",
   "firstName": "Maxwell",
   "lastName": "Fleming",
-  "subtitle": "Motel Manager • Peer Worker • Occasional menace to boring websites",
-  "tagline": "Warm human. Good chats. Strong opinions. Dog supervision always active.",
-  "playfulMini": "🐶 Gracie-approved internet corner",
+  "subtitle": "Motel & Hospitality Manager • Accommodation Operations • Guest Services",
+  "tagline": "Reliable leadership, smooth operations, and genuinely great guest experiences.",
   "proBio": "Experienced Motel and Hospitality Manager with a strong background in accommodation operations, guest services, team leadership, and business administration. Proven ability to manage day-to-day motel operations, oversee staff, coordinate reservations, maintain high guest satisfaction standards, and drive business performance. Skilled in customer service, problem-solving, financial administration, and creating positive guest experiences while ensuring efficient and professional operations.",
   "resumeUrl": "https://docs.google.com/document/d/e/2PACX-1vSE8U2HXCFiGjp2JaKVLtxWKq88RjvyEFZhN-THfa6-MYR66kFTiubEudkDvI-9DA/pub",
-  "badges": ["Playful & quirky", "Powered by mild chaos"],
+  "badges": ["Hospitality & Accommodation Management", "Open to opportunities"],
   "contact": {
     "phone": "0419164962",
     "email": "maxfleming12@gmail.com"
@@ -16,15 +15,15 @@
     {
       "icon": "📞",
       "label": "Call me",
-      "description": "Fastest old-school option",
-      "href": "tel:041916492",
+      "description": "Speak with me directly",
+      "href": "tel:0419164962",
       "arrow": "→",
       "external": false
     },
     {
       "icon": "📧",
       "label": "Email me",
-      "description": "For sane and semi-sane messages",
+      "description": "Send me a message",
       "href": "mailto:maxfleming12@gmail.com",
       "arrow": "→",
       "external": false
@@ -32,7 +31,7 @@
     {
       "icon": "📸",
       "label": "Instagram",
-      "description": "Bits of life, chaos, and vibes",
+      "description": "Follow along",
       "href": "https://www.instagram.com/cootaboi/",
       "arrow": "↗",
       "external": true
@@ -40,7 +39,7 @@
     {
       "icon": "👤",
       "label": "Facebook",
-      "description": "A little more 2012, still valid",
+      "description": "Connect on Facebook",
       "href": "https://www.facebook.com/maccie88",
       "arrow": "↗",
       "external": true
@@ -48,32 +47,13 @@
   ],
   "sections": {
     "links": {
-      "title": "Pick your adventure",
-      "subtitle": "Everything you probably came here for, minus the corporate waffle."
+      "title": "Get in touch",
+      "subtitle": "Reach me directly or connect online."
     },
     "extras": {
-      "title": "Extras because basic is rude",
-      "subtitle": "This site comes with optional nonsense and one extremely important staff member."
+      "title": "Quick contact",
+      "subtitle": "Grab my phone or email in one tap."
     }
-  },
-  "moods": [
-    "Running on vibes, instinct, and whatever snack is closest.",
-    "Currently available for chats, caffeine, and avoiding nonsense.",
-    "Doing my best. Some assembly clearly required.",
-    "Emotionally supported by a whippet and mild delusion.",
-    "Polite on the outside. Internally writing a strongly worded memo.",
-    "Looking calm. Absolutely not calm. Great posture though.",
-    "Open for business-ish. Closed for nonsense.",
-    "Holding it together like a zip tie in a cyclone."
-  ],
-  "defaultMood": "Today's setting: professionally held together with a suspicious amount of duct tape.",
-  "gracieModal": {
-    "title": "Meet Gracie 🐶",
-    "lines": [
-      "Hi, I'm Gracie. I supervise everything.",
-      "He thinks he runs this site. He doesn't.",
-      "Whippet. Fashion icon. Emotional support noodle. Full-time household manager."
-    ]
   },
   "work": {
     "title": "See some of my work",
@@ -83,5 +63,5 @@
       { "icon": "📋", "label": "Professional Support Documents", "url": "https://forms.macciesconsulting.au/" }
     ]
   },
-  "footer": "Made with ✨, actual personality, and very firm anti-boring beliefs."
+  "footer": "© 2026 Maxwell Fleming · Hospitality & Accommodation Management"
 }

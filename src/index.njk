@@ -6,11 +6,11 @@ permalink: /index.html
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ home.name }} | Link Hub</title>
-  <meta name="description" content="Playful personal link hub for {{ home.name }}." />
+  <title>{{ home.name }} | Hospitality & Accommodation Manager</title>
+  <meta name="description" content="{{ home.name }} — experienced Motel &amp; Hospitality Manager. Contact details, resume, and recent work." />
   <link rel="stylesheet" href="/assets/css/main.css" />
 </head>
-<body class="professional">
+<body>
 
   <div class="sparkles" aria-hidden="true">
     <span style="top:9%; left:12%; animation-delay:.2s"></span>
@@ -27,12 +27,8 @@ permalink: /index.html
         <div class="badge-row">
           <a class="badge badge-portal" href="/dashboard/login.html">🔐 My Dashboard</a>
           {% for badge in home.badges %}
-            <span class="badge{% if loop.last %} playful-only{% endif %}">{{ badge }}</span>
+            <span class="badge">{{ badge }}</span>
           {% endfor %}
-        </div>
-        <div class="switches">
-          <button class="toggle" id="modeToggle" type="button">✨ Playful mode</button>
-          <button class="toggle" id="musicToggle" type="button" aria-pressed="false">🎵 Music off</button>
         </div>
       </div>
 
@@ -45,9 +41,8 @@ permalink: /index.html
           <h1 class="title">{{ home.firstName }}<br />{{ home.lastName }}</h1>
           <p class="subtitle">{{ home.subtitle }}</p>
           <p class="tagline">{{ home.tagline }}</p>
-          <div class="mini playful-only">{{ home.playfulMini }}</div>
-          <div class="pro-only pro-bio">{{ home.proBio }}</div>
-          <a href="{{ home.resumeUrl }}" target="_blank" rel="noopener noreferrer" class="pro-only resume-btn">📄 View Resume</a>
+          <div class="pro-bio">{{ home.proBio }}</div>
+          <a href="{{ home.resumeUrl }}" target="_blank" rel="noopener noreferrer" class="resume-btn">📄 View Resume</a>
         </div>
       </div>
     </section>
@@ -78,12 +73,7 @@ permalink: /index.html
         <div class="tools">
           <button class="tool-btn" type="button" id="copyPhone">📲 Copy phone</button>
           <button class="tool-btn" type="button" id="copyEmail">✉️ Copy email</button>
-          <button class="tool-btn playful-only" type="button" id="moodBtn">🔥 Random mood</button>
-          <button class="tool-btn playful-only" type="button" id="gracieBtn">🐶 Meet Gracie</button>
         </div>
-
-        <div class="mood-box playful-only" id="moodBox">{{ home.defaultMood }}</div>
-        <div class="tiny-note">Music toggle uses a built-in tiny synth loop — no external audio files needed.</div>
       </aside>
     </section>
 
@@ -106,26 +96,10 @@ permalink: /index.html
     <div class="footer">{{ home.footer }}</div>
   </main>
 
-  <div class="modal" id="gracieModal" aria-hidden="true">
-    <div class="modal-card">
-      <div class="modal-body">
-        <h3>{{ home.gracieModal.title }}</h3>
-        {% for line in home.gracieModal.lines %}
-          <p>{{ line }}</p>
-        {% endfor %}
-        <div class="modal-actions">
-          <button class="primary" type="button" id="boopBtn">Boop approved</button>
-          <button class="ghost" type="button" id="closeModal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div class="toast" id="toast"></div>
 
   <script>
-    // Inline mood data from content file so JS can access it
-    const MOODS = {{ home.moods | dump | safe }};
+    // Contact details from content file so the copy buttons can use them
     const PHONE = {{ home.contact.phone | dump | safe }};
     const EMAIL = {{ home.contact.email | dump | safe }};
   </script>
