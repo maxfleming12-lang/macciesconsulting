@@ -21,9 +21,12 @@ const CONTENT_DIR = path.join(__dirname, '..', 'content');
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function readContent(pageSlug) {
-  const file = path.join(CONTENT_DIR, `${pageSlug}.json`);
-  if (!fs.existsSync(file)) throw new Error(`Content file not found: ${file}`);
-  return JSON.parse(fs.readFileSync(file, 'utf8'));
+  const base = path.resolve(CONTENT_DIR);
+  const target = path.resolve(base, `${pageSlug}.json`);
+  const relative = path.relative(base, target);
+  if (relative.startsWith('..') || path.isAbsolute(relative)) throw new Error('Invalid path');
+  if (!fs.existsSync(target)) throw new Error(`Content file not found: ${target}`);
+  return JSON.parse(fs.readFileSync(target, 'utf8'));
 }
 
 function writeContent(pageSlug, data) {
