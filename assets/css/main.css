@@ -295,6 +295,43 @@
     .work-icon { font-size: 1.2rem; }
     .work-arrow { margin-left: auto; opacity: .7; }
 
+    /* Latest release */
+    .album {
+      margin: 4px 0 14px;
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+    .album-head { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .album-badge {
+      font-size: .7rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--pill);
+      border: 1px solid rgba(255,255,255,.28);
+    }
+    .album-title { margin: 0; font-size: 1.05rem; font-weight: 900; }
+    .album-blurb { margin: 10px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.5; }
+    .album-tracks {
+      margin: 12px 0 0;
+      padding-left: 1.2rem;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 4px 18px;
+      font-size: .9rem;
+      color: var(--muted);
+    }
+    .album .work-links {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 12px;
+    }
+
     .mood-box {
       margin-top: 14px;
       min-height: 64px;
@@ -420,4 +457,6 @@
       .link-btn { padding: 14px; }
       .wrap { padding: 16px 12px 34px; }
       .hero { padding: 16px; border-radius: 26px; }
+      .album-tracks { grid-template-columns: 1fr; }
+      .album .work-links { grid-template-columns: 1fr; }
     }

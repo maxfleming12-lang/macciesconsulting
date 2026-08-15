@@ -65,10 +65,31 @@
   },
   "music": {
     "title": "My Music",
-    "subtitle": "Original songs I've written and produced — stream or download them all on Suno.",
+    "subtitle": "Original songs I've written and produced.",
     "icon": "🎵",
     "linkLabel": "Listen on Suno",
-    "url": "https://suno.com/s/xNXMBqNF5imPjqpQ"
+    "url": "https://suno.com/s/xNXMBqNF5imPjqpQ",
+    "album": {
+      "badge": "Out now",
+      "title": "The Relationship That Wasn't, Pt. 2",
+      "blurb": "Eight tracks that came from real experiences, real people and real feelings. Some are sad, some are angry, some are hopeful. If you've ever loved someone you couldn't quite have, stayed longer than you should have, or finally realised you deserved to move forward, there'll probably be something here you understand.",
+      "tracks": [
+        "Bad Blood, Bad Signal",
+        "Valentine's Day",
+        "Always There",
+        "Still Payin' For You",
+        "Inspired by The Relationship That Wasn't",
+        "Do I Love Him?",
+        "Can't Keep Me Down",
+        "Looking Forward"
+      ],
+      "links": [
+        { "icon": "🍎", "label": "Apple Music", "url": "https://geo.music.apple.com/album/the-relationship-that-wasnt-pt-2/6801267190" },
+        { "icon": "🟢", "label": "Spotify", "url": "https://open.spotify.com/album/6FrMTM6WQralFUdAR1SLmY" },
+        { "icon": "🎵", "label": "Amazon Music", "url": "https://music.amazon.com/albums/B0HF6NY94J" },
+        { "icon": "🌊", "label": "TIDAL", "url": "https://www.tidal.com/album/552169875" }
+      ]
+    }
   },
   "footer": "© 2026 Maxwell Fleming · Hospitality & Accommodation Management"
 }
