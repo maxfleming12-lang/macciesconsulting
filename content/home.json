@@ -55,6 +55,14 @@
       "subtitle": "Grab my phone or email in one tap."
     }
   },
+  "app": {
+    "name": "TagLedger",
+    "initials": "TL",
+    "icon": "/assets/images/tagledger-icon.png",
+    "subtitle": "My app, now on the App Store",
+    "label": "Download on the App Store",
+    "url": "https://apps.apple.com/au/app/tagledger/id6831557586"
+  },
   "work": {
     "title": "See some of my work",
     "subtitle": "A couple of things I've built.",
