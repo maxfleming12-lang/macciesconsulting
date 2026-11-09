@@ -74,6 +74,18 @@ permalink: /index.html
           <button class="tool-btn" type="button" id="copyPhone">📲 Copy phone</button>
           <button class="tool-btn" type="button" id="copyEmail">✉️ Copy email</button>
         </div>
+
+        {% if home.app %}
+        <a class="app-promo" href="{{ home.app.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ home.app.name }} on the App Store">
+          <span class="app-icon-wrap">
+            <span class="app-icon-fallback" aria-hidden="true">{{ home.app.initials }}</span>
+            <img class="app-icon" src="{{ home.app.icon }}" alt="{{ home.app.name }} app icon" onerror="this.remove()" />
+          </span>
+          <span class="app-name">{{ home.app.name }}</span>
+          <span class="app-sub">{{ home.app.subtitle }}</span>
+          <span class="app-cta">🍎 {{ home.app.label }} ↗</span>
+        </a>
+        {% endif %}
       </aside>
     </section>
 
